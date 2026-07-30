@@ -1,15 +1,3 @@
-File "/mount/src/260730/main.py", line 173
-hovertemplate="<b>%{hover_name}</b>
-^
-SyntaxError: unterminated string literal (detected at line 173)
-
-파이썬 코드에서 큰따옴표(")로 묶인 문자열 안에 실제 줄바꿈(엔터)이 들어가서 발생한 문법 오류(SyntaxError)입니다.
-
-Plotly의 툴팁(hovertemplate)은 HTML을 지원하므로, 파이썬 코드에서 줄바꿈을 할 때는 엔터 키를 치는 대신 한 줄로 작성하고 그 안에 HTML 줄바꿈 태그인 을 넣어야 정상적으로 작동합니다.
-
-해당 오류를 수정한 전체 코드를 다시 안내해 드립니다. 기존 코드를 모두 지우고 아래 코드로 덮어씌워 주세요.
-
-📄 main.py (오류 수정본)
 # main.py
 # 필요한 라이브러리를 불러옵니다.
 import streamlit as st
@@ -179,14 +167,13 @@ fig = px.choropleth_mapbox(
     labels={"고령화율_구간": "고령화율", "시도": "시도", "고령화율": "고령화율 (%)"}
 )
 
-# 마우스를 올렸을 때 나타나는 툴팁(tooltip)의 형식을 더 깔끔하게 수정합니다.
-# (이전 코드에서 발생한 줄바꿈 문법 오류를 
- 태그를 사용하여 수정했습니다.)
+# [수정됨] 문자열 줄바꿈으로 인한 SyntaxError를 방지하기 위해 한 줄로 작성하고 
+ 태그를 사용했습니다.
 fig.update_traces(
     customdata=merged_df[['시도', '고령화율']],
     hovertemplate="<b>%{hover_name}</b>
 %{customdata[0]}
-고령화율: %{customdata[1]:.2f}%<extra></extra>",
+고령화율: %{customdata[1]:.2f}%<extra></extra>"
 )
 
 # 지도 레이아웃을 설정합니다.
