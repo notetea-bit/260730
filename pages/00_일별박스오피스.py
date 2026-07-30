@@ -5,7 +5,37 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 st.set_page_config(page_title="박스오피스 대시보드", layout="wide")
-st.title("🎬 박스오피스 대시보드")
+
+# 제목 부분을 그라데이션 배경으로 화사하게 꾸민다.
+st.markdown(
+    """
+    <style>
+    .header-box {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff9f43 45%, #a55eea 100%);
+        padding: 32px 36px;
+        border-radius: 18px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    }
+    .header-box h1 {
+        color: #ffffff;
+        margin: 0;
+        font-size: 2.3rem;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+    }
+    .header-box p {
+        color: rgba(255, 255, 255, 0.92);
+        margin: 8px 0 0 0;
+        font-size: 1.05rem;
+    }
+    </style>
+    <div class="header-box">
+        <h1>🎬 박스오피스 대시보드</h1>
+        <p>날짜를 골라 그날의 일별 박스오피스 순위를 확인해 보세요 🍿</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # ------------------------------------------------------------
 # 0. 인증키 확인
@@ -91,9 +121,9 @@ c3.metric("누적 관객", f"{top['audiAcc']:,}명")
 # ------------------------------------------------------------
 def rank_change_text(inten: int) -> str:
     if inten > 0:
-        return f"🔺{inten}"
+        return f"▲{inten}"
     elif inten < 0:
-        return f"🔻{abs(inten)}"
+        return f"▼{abs(inten)}"
     else:
         return "-"
 
@@ -112,10 +142,24 @@ table = table[["rank", "영화명", "순위변동", "openDt", "audiCnt", "audiAc
 table.columns = ["순위", "영화명", "전일대비", "개봉일", "관객수", "누적관객", "스크린수"]
 table = table.sort_values("순위").reset_index(drop=True)
 
-st.subheader("📋 박스오피스 TOP 10")
-st.dataframe(table, use_container_width=True)
 
-st.caption("🔺 순위 상승 · 🔻 순위 하락 · 🏆 누적관객 100만 명 이상")
+def color_rank_change(val: str) -> str:
+    """순위가 오른 글자(▲)는 빨간색, 내린 글자(▼)는 파란색으로 칠한다."""
+    if val.startswith("▲"):
+        return "color: red; font-weight: bold;"
+    elif val.startswith("▼"):
+        return "color: blue; font-weight: bold;"
+    return ""
+
+
+styled_table = table.style.applymap(color_rank_change, subset=["전일대비"]).format(
+    {"관객수": "{:,}", "누적관객": "{:,}"}
+)
+
+st.subheader("📋 박스오피스 TOP 10")
+st.dataframe(styled_table, use_container_width=True)
+
+st.caption("▲ 순위 상승(빨강) · ▼ 순위 하락(파랑) · 🏆 누적관객 100만 명 이상")
 
 # ------------------------------------------------------------
 # 5. 관객수 상위 5편 그래프
