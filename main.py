@@ -1,3 +1,15 @@
+File "/mount/src/260730/main.py", line 173
+hovertemplate="<b>%{hover_name}</b>
+^
+SyntaxError: unterminated string literal (detected at line 173)
+
+파이썬 코드에서 큰따옴표(")로 묶인 문자열 안에 실제 줄바꿈(엔터)이 들어가서 발생한 문법 오류(SyntaxError)입니다.
+
+Plotly의 툴팁(hovertemplate)은 HTML을 지원하므로, 파이썬 코드에서 줄바꿈을 할 때는 엔터 키를 치는 대신 한 줄로 작성하고 그 안에 HTML 줄바꿈 태그인 을 넣어야 정상적으로 작동합니다.
+
+해당 오류를 수정한 전체 코드를 다시 안내해 드립니다. 기존 코드를 모두 지우고 아래 코드로 덮어씌워 주세요.
+
+📄 main.py (오류 수정본)
 # main.py
 # 필요한 라이브러리를 불러옵니다.
 import streamlit as st
@@ -102,7 +114,7 @@ with st.spinner('고령화율 데이터를 계산하는 중입니다...'):
         merged_df["고령화율"], bins=bins, labels=labels, right=False
     )
     
-    # [추가] 고령화율 순위 열을 추가합니다. (높은 순서대로 1, 2, 3...)
+    # 고령화율 순위 열을 추가합니다. (높은 순서대로 1, 2, 3...)
     merged_df['고령화율_순위'] = merged_df['고령화율'].rank(method='min', ascending=False).astype(int)
 
 
@@ -118,7 +130,7 @@ target_data = merged_df[
 ]
 
 # st.metric을 사용하여 내 지역 정보를 카드 형태로 표시합니다.
-st.markdown(f"---")
+st.markdown("---")
 st.subheader(f"📍 내 지역 ({TARGET_SIDO} {TARGET_SIGUNGU}) 고령화율 현황")
 
 if not target_data.empty:
@@ -168,6 +180,8 @@ fig = px.choropleth_mapbox(
 )
 
 # 마우스를 올렸을 때 나타나는 툴팁(tooltip)의 형식을 더 깔끔하게 수정합니다.
+# (이전 코드에서 발생한 줄바꿈 문법 오류를 
+ 태그를 사용하여 수정했습니다.)
 fig.update_traces(
     customdata=merged_df[['시도', '고령화율']],
     hovertemplate="<b>%{hover_name}</b>
@@ -192,7 +206,7 @@ fig.update_layout(
     ]
 )
 
-# [추가] 하이라이트 GeoJSON이 존재할 경우, 지도에 굵은 빨간색 경계선을 추가합니다.
+# 하이라이트 GeoJSON이 존재할 경우, 지도에 굵은 빨간색 경계선을 추가합니다.
 if highlight_geojson and highlight_geojson['features']:
     fig.update_layout(
         mapbox_layers=fig.layout.mapbox_layers + (
@@ -245,4 +259,3 @@ with col2:
         column_config={"고령화율": st.column_config.NumberColumn("고령화율 (%)", format="%.2f")},
         use_container_width=True
     )
-
