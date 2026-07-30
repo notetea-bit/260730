@@ -167,8 +167,7 @@ fig = px.choropleth_mapbox(
     labels={"고령화율_구간": "고령화율", "시도": "시도", "고령화율": "고령화율 (%)"}
 )
 
-# [수정됨] 문자열 줄바꿈으로 인한 SyntaxError를 방지하기 위해 한 줄로 작성하고 
- 태그를 사용했습니다.
+# SyntaxError 방지를 위해 문자열을 한 줄로 작성하고 html 줄바꿈 태그를 넣었습니다.
 fig.update_traces(
     customdata=merged_df[['시도', '고령화율']],
     hovertemplate="<b>%{hover_name}</b>
