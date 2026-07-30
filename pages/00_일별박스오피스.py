@@ -152,9 +152,13 @@ def color_rank_change(val: str) -> str:
     return ""
 
 
-styled_table = table.style.applymap(color_rank_change, subset=["전일대비"]).format(
-    {"관객수": "{:,}", "누적관객": "{:,}"}
-)
+styler = table.style
+# pandas 최신 버전은 applymap이 없어지고 map으로 바뀌었다. 있는 쪽을 골라서 쓴다.
+if hasattr(styler, "map"):
+    styler = styler.map(color_rank_change, subset=["전일대비"])
+else:
+    styler = styler.applymap(color_rank_change, subset=["전일대비"])
+styled_table = styler.format({"관객수": "{:,}", "누적관객": "{:,}"})
 
 st.subheader("📋 박스오피스 TOP 10")
 st.dataframe(styled_table, use_container_width=True)
